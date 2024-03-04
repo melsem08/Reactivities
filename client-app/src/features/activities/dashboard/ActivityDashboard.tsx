@@ -23,7 +23,12 @@ export default function ActivityDashboard({activities, selectedActivity, selectA
     return (
         <Grid>
             <GridColumn width='10'>
-                <ActivityList activities={activities} selectActivity={selectActivity} deleteActivity={deleteActivity}/>
+                <ActivityList 
+                activities={activities} 
+                selectActivity={selectActivity} 
+                deleteActivity={deleteActivity}
+                submitting={submitting}
+                />
             </GridColumn>
             <GridColumn width='6'>
                 {selectedActivity && !editMode &&
