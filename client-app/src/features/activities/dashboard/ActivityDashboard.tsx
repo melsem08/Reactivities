@@ -7,13 +7,7 @@ import ActivityDetails from "../details/ActivityDetails";
 import ActivityForm from "../form/ActivityForm";
 import { useStore } from "../../../app/stores/store";
 
-interface Props{
-    activities: Activity[];
-    deleteActivity: (id: string) => void;
-    submitting: boolean;
-}
-
-export default observer (function ActivityDashboard({activities, deleteActivity, submitting}: Props) {
+export default observer (function ActivityDashboard() {
 
     const {activityStore} = useStore();
     const {selectedActivity, editMode} = activityStore;
@@ -21,11 +15,7 @@ export default observer (function ActivityDashboard({activities, deleteActivity,
     return (
         <Grid>
             <GridColumn width='10'>
-                <ActivityList 
-                activities={activities} 
-                deleteActivity={deleteActivity}
-                submitting={submitting}
-                />
+                <ActivityList />
             </GridColumn>
             <GridColumn width='6'>
                 {selectedActivity && !editMode &&
