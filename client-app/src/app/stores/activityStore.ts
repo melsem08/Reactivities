@@ -18,10 +18,11 @@ export default class ActivityStore {
         this.setLoadingInitial(true);
         try {
             const activities = await agent.Activities.list();
+            this.activities = [];
             activities.forEach(activity => {
-                activity.date = activity.date.split('T')[0];
-                this.activities.push(activity); 
-              })
+                 activity.date = activity.date.split('T')[0];
+                 this.activities.push(activity); 
+               })
               this.setLoadingInitial(false);
         } catch (error) {
             console.log(error);
