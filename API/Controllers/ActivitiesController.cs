@@ -25,7 +25,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command {Activity = activity}));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}")] //api/activities/{id}
         public async Task<IActionResult> EditActivity (Guid id, Activity activity)
         {
             activity.Id = id;
@@ -33,10 +33,16 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command {Activity = activity}));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")] //api/activities/{id}
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command {Id = id}));
+        }
+
+        [HttpPost("{id}/attend")]
+        public async Task<IActionResult> Attend(Guid id)
+        {
+            return HandleResult(await Mediator.Send(new UpdateAttendance.Command {Id = id}));
         }
     }
 }
