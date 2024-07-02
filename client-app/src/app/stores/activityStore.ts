@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { Activity } from "../models/activity";
+import { Activity, ActivityFormValues } from "../models/activity";
 import agent from "../api/agent";
 import { v4 as uuid } from 'uuid';
 import { format } from "date-fns";
@@ -88,40 +88,35 @@ export default class ActivityStore {
         this.loadingInitial = state;
     }
 
-    createActivity = async (activity: Activity) => {
-        this.loading = true;
-        activity.id = uuid();
+    createActivity = async (activity: ActivityFormValues) => {
+        const user = store.userStore.user;
+        const attendee = new Profile(user!);
         try {
             await agent.Activities.create(activity);
+            const newActivity = new Activity(activity);
+            newActivity.hostUsername = user!.username;
+            newActivity.attendees = [attendee];
+            this.setActivity(newActivity)
             runInAction(() => {
-                this.actvityRegistry.set(activity.id, activity);
-                this.selectedActivity = activity;
-                this.editMode = false;
-                this.loading = false;
+                this.selectedActivity = newActivity;
             })
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.loading = false;
-            })
         }
     }
 
-    updateActivity = async (activity: Activity) => {
-        this.loading = true;
+    updateActivity = async (activity: ActivityFormValues) => {
         try {
             await agent.Activities.update(activity);
             runInAction(() => {
-                this.actvityRegistry.set(activity.id, activity);
-                this.selectedActivity = activity;
-                this.editMode = false;
-                this.loading = false;
+                if (activity.id) {
+                    const updatedActivity = { ...this.getActivity(activity.id), ...activity };
+                    this.actvityRegistry.set(activity.id, updatedActivity as Activity);
+                    this.selectedActivity = activity as Activity;
+                }
             })
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.loading = false;
-            })
         }
     }
 
@@ -150,7 +145,7 @@ export default class ActivityStore {
                 if (this.selectedActivity?.isGoing) {
                     this.selectedActivity.attendees =
                         this.selectedActivity.attendees?.filter(a => a.username !== user?.username);
-                        this.selectedActivity.isGoing = false;
+                    this.selectedActivity.isGoing = false;
                 } else {
                     const attendee = new Profile(user!);
                     this.selectedActivity?.attendees?.push(attendee);
